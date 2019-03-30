@@ -8,12 +8,14 @@ class ParametricTree{
     constructor(Iter) {
         this.Iterations = Iter;
         this.STR = "";
+        this.Tree = new THREE.Geometry();
+        this.Leaves = new THREE.Geometry();
 
     }
     developString(){
-        var r1 = 0.9;
+        var r1 = 0.90;
         var r2 = 0.6;
-        var a0 = 45;
+        var a0 = 42;
         var a2 = 45;
         var d = 137.5;
         var wr = 0.707;
@@ -66,7 +68,7 @@ class ParametricTree{
                             return parseFloat(x);
                         });
                         tempVal="";
-                        tempStr = tempStr + "!(" + Value[1] + ")F("+ Value[0]+")[+("+a2+")$B("+Value[0]*r2+"," + Value[1]*wr+")]B("+Value[0]*r1+","+Value[1]*wr+")";
+                        tempStr = tempStr + "!(" + Value[1] + ")F("+ Value[0]+")[+("+a2+")$B("+Value[0]*r2+"," + Value[1]*wr+")]B("+Value[0]*r1+","+Value[1]*wr+")[{*G(1)*+(45)G(1)*}{|*G(1)*-(45)G(1)*}{|*G(1)*+(45)G(1)*}]";
                     }
                 }
                 else{
@@ -80,6 +82,7 @@ class ParametricTree{
     }
     createMesh(SP){
         this.developString();
+        console.log(this.STR);
         var Stack = [];
         var PolyStack = [];
         var Cylinder;
@@ -87,14 +90,14 @@ class ParametricTree{
         var tempVal;
         var StackTemp;
         var PolyTemp = new Polygon();
+        var Value;
 
         var child;
         var LineWidth = 1;
         var Segments = 32;
-        var Geometry = new THREE.Geometry();
         var Leafs = new THREE.Geometry();
         var G_TEMP = new THREE.Geometry();
-        var Def_Degree = 10;
+        var Def_Degree = 22;
 
         for (var k = 0; k < this.STR.length; k+=1){
             //console.log(this.STR.charAt(k));
@@ -112,7 +115,7 @@ class ParametricTree{
                     Cylinder = new TwoPointCylinder(temp.position,child.position, temp.Width, child.Width, Segments);
                     G_TEMP = Cylinder.CreateMesh()
                     //G_TEMP.updateMatrix();
-                    Geometry.merge(G_TEMP);
+                    this.Tree.merge(G_TEMP);
                     temp = child;
                 break;
                 case 'G':
@@ -128,7 +131,7 @@ class ParametricTree{
                         temp.moveThisForward(Value[0]);
                     }
                     else{
-                        temp.moveThisForward(2);
+                        temp.moveThisForward(1);
                     }
 
                 break;
@@ -154,6 +157,7 @@ class ParametricTree{
                             tempVal += this.STR[k];
                             k++;
                         }
+
                         temp.rotateU(-1*parseFloat(tempVal));
                     }
                     else{
@@ -232,9 +236,9 @@ class ParametricTree{
                 break;
                 case '[':
                     StackTemp = new HLUNode(temp.position.x,temp.position.y,temp.position.z, temp.Width);
-                    StackTemp.H = temp.H;
-                    StackTemp.L = temp.L;
-                    StackTemp.U = temp.U;
+                    StackTemp.H.copy(temp.H);
+                    StackTemp.L.copy(temp.L);
+                    StackTemp.U.copy(temp.U);
                     Stack.push(StackTemp);
                 break;
                 case ']':
@@ -246,10 +250,10 @@ class ParametricTree{
                 break;
                 case'}':
                     G_TEMP = PolyTemp.buildGeometry();
-                    Geometry.merge(G_TEMP);
+                    this.Leaves.merge(G_TEMP);
                     PolyTemp = PolyStack.pop();
                 break;
-                case'.':
+                case'*':
                     PolyTemp.push(temp.position);
                 break;
                 case '$':
@@ -259,7 +263,6 @@ class ParametricTree{
                 break;
             }
         }
-        return Geometry;
     }
 }
 

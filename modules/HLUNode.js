@@ -7,91 +7,48 @@ class HLUNode{
         this.L = new THREE.Vector3(-1,0,0);
         this.U = new THREE.Vector3(0,0,-1);
 
-        this.V = new THREE.Vector3(1,0,0);
         this.Width = w;
 
     }
     moveForward(Distance, Width){
         var V = new THREE.Vector3();
-        var AddVec = this.H;
+        var AddVec = new THREE.Vector3();
+        AddVec.copy(this.H);
         AddVec.multiplyScalar(Distance);
 
         V.addVectors(this.position, AddVec);
         var N = new HLUNode(V.x,V.y,V.z, Width);
-        N.H = this.H;
-        N.L = this.L;
-        N.U = this.U;
+        N.H.copy(this.H);
+        N.L.copy(this.L);
+        N.U.copy(this.U);
 
         return N;
     }
     moveThisForward(Distance){
-        var AddVec =  this.H;
+        var AddVec =  new THREE.Vector3(this.H.x,this.H.y,this.H.z);
         AddVec.multiplyScalar(Distance);
         this.position.add(AddVec);
 
     }
+
     rotateU(deg){
-        var RU = new THREE.Matrix3();
-        RU.set(
-            Math.cos(deg)   , Math.sin(deg), 0,
-            -1*Math.sin(deg), Math.cos(deg), 0,
-            0               , 0            , 1
-        )
-        var HLUMAT = new THREE.Matrix3();
-        HLUMAT.set(this.H.x, this.L.x, this.U.x,
-                   this.H.y, this.L.y, this.U.y,
-                   this.H.z, this.L.z, this.U.z);
-       HLUMAT.multiply(RU);
-       var HLU = HLUMAT.toArray();
-       this.H.fromArray(HLU);
-       this.L.fromArray(HLU, 3);
-       this.U.fromArray(HLU, 6);
+       this.H.applyAxisAngle(this.U,deg*Math.PI/180);
+       this.L.applyAxisAngle(this.U,deg*Math.PI/180);
        this.H.normalize();
        this.L.normalize();
-       this.U.normalize();
-
     }
     rotateL(deg){
-        var RL = new THREE.Matrix3();
-        RL.set(
-            Math.cos(deg), 0, -1*Math.sin(deg),
-            0            , 1, 0,
-            Math.sin(deg), 0, Math.cos(deg),
-        )
-        var HLUMAT = new THREE.Matrix3();
-        HLUMAT.set(this.H.x, this.L.x, this.U.x,
-                   this.H.y, this.L.y, this.U.y,
-                   this.H.z, this.L.z, this.U.z);
-       HLUMAT.multiply(RL);
-       var HLU = HLUMAT.toArray();
-       this.H.fromArray(HLU);
-       this.L.fromArray(HLU, 3);
-       this.U.fromArray(HLU, 6);
-       this.H.normalize();
-       this.L.normalize();
-       this.U.normalize();
+      this.H.applyAxisAngle(this.L,deg*Math.PI/180);
+      this.U.applyAxisAngle(this.L,deg*Math.PI/180);
+      this.H.normalize();
+      this.U.normalize();
 
     }
     rotateH(deg){
-        var RH = new THREE.Matrix3();
-        RH.set(
-            1,             0,                0,
-            0, Math.cos(deg), -1*Math.sin(deg),
-            0, Math.sin(deg), Math.cos(deg)
-        );
-        var HLUMAT = new THREE.Matrix3();
-        HLUMAT.set(this.H.x, this.L.x, this.U.x,
-                   this.H.y, this.L.y, this.U.y,
-                   this.H.z, this.L.z, this.U.z);
-
-        HLUMAT.multiply(RH);
-        var HLU = HLUMAT.toArray();
-        this.H.fromArray(HLU);
-        this.L.fromArray(HLU, 3);
-        this.U.fromArray(HLU, 6);
-        this.H.normalize();
-        this.L.normalize();
-        this.U.normalize();
+      this.U.applyAxisAngle(this.H,deg*Math.PI/180);
+      this.L.applyAxisAngle(this.H,deg*Math.PI/180);
+      this.U.normalize();
+      this.L.normalize();
 
     }
     RollTurtle(){

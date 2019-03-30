@@ -12,7 +12,7 @@ import * as BarkFragmentShader from "../glsl/BarkFragmentShader.glsl";
 
 class TestModule{
     start(){
-        var Tree, TreeGroup;
+        var Tree,Leaves, TreeGroup;
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
         var renderer = new THREE.WebGLRenderer();
@@ -20,11 +20,11 @@ class TestModule{
         var startNode = new Node(0,0,0, new THREE.Vector3(0,1,0))
         var startHLUNode = new HLUNode(0,0,0,1);
 
+
         document.body.appendChild(renderer.domElement);
 
-        var ParTree = new Leaf(5);
-        var TreeGeometry = ParTree.createMesh(startHLUNode);
-        console.log(TreeGeometry)
+        var ParTree = new ParametricTree(11);
+        ParTree.createMesh(startHLUNode);
         var material = new THREE.ShaderMaterial({
               vertexShader: BarkVertexShader ,
               fragmentShader:BarkFragmentShader ,
@@ -34,43 +34,20 @@ class TestModule{
               side: THREE.DoubleSide,
         });
         var material2 = new THREE.MeshBasicMaterial({
-            color:0x00ff00,
+            color:0x003300,
             side : THREE.DoubleSide,
         })
 
-        Tree = new THREE.Mesh(TreeGeometry, material2);
-        /*var C = new TwoPointCylinder(new THREE.Vector3(0,0,0), new THREE.Vector3(2,2,2), 3,2,8);
-        var CG = C.CreateMesh();
-        scene.add(CG);*/
-
-
-
-        //Tree = new SimpleTree(5);
-        //TreeGroup = Tree.createMesh(startNode);
-
-        /*var Leafs = new THREE.Geometry();
-        var Poly = new Polygon();
-        Poly.push(new THREE.Vector3(0,0,0));
-        Poly.push(new THREE.Vector3(1,0,0));
-        Poly.push(new THREE.Vector3(1,1,0));
-        Poly.push(new THREE.Vector3(1,1,2));
-        Poly.push(new THREE.Vector3(1,1,3));
-        var GEO = Poly.buildGeometry();
-        Leafs.merge(GEO);
-        var Poly2 = new Polygon();
-        Poly2.push(new THREE.Vector3(1,1,1));
-        Poly2.push(new THREE.Vector3(1,0,1));
-        Poly2.push(new THREE.Vector3(0,1,1));
-        var GEO = Poly2.buildGeometry();
-        Leafs.merge(GEO);
-        var MESH = new THREE.Mesh(Leafs, material2);
-        scene.add(MESH);*/
+        Tree = new THREE.Mesh(ParTree.Tree, material);
+        Leaves = new THREE.Mesh(ParTree.Leaves,material2);
+        console.log(ParTree.Leaves);
 
         scene.add(Tree);
+        scene.add(Leaves);
 
 
-        var CamDist = 1;
-        var CamHeight = 0;
+        var CamDist = 70;
+        var CamHeight = 40;
         camera.position.z = CamDist;
         camera.position.y = CamHeight;
 
