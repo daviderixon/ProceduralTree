@@ -1,11 +1,18 @@
 {
-  parser: "babel-eslint",
-  "rules": {
-      fix: true,
-      "no-undef": 0,
-      "max-len": 0,
-      "prefer-const": 0,
-      "no-console": 0,
-  },
-  "extends": ["airbnb-base"],
+	"parser": "babel-eslint",
+	"rules": {
+		"fix": true,
+		"no-undef": 0,
+		"max-len": 0,
+		"prefer-const": 0,
+		"no-console": 0,
+		"indent": [
+			"error",
+			"tab"
+		],
+		"no-tabs": ["error", { "allowIndentationTabs": true }]
+	},
+	"extends": [
+		"airbnb-base"
+	]
 }
